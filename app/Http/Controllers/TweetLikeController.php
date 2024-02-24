@@ -1,16 +1,25 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-// 🔽 追加
 use App\Models\Tweet;
+// 🔽 追加
+use App\Services\TweetLikeService;
+use Illuminate\Http\Request;
+
 
 class TweetLikeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+      // 🔽 追加
+    protected $tweetLikeService;
+
+    // 🔽 追加
+    public function __construct(TweetLikeService $tweetLikeService)
+    {
+        $this->tweetLikeService = $tweetLikeService;
+    }
     public function index()
     {
         //
@@ -29,8 +38,9 @@ class TweetLikeController extends Controller
      */
     public function store(Tweet $tweet)
     {
-      $tweet->liked()->attach(auth()->id());
-      return back();
+    // 🔽 編集
+        $this->tweetLikeService->likeTweet($tweet, auth()->user());
+        return back();
     }
 
     /**
@@ -62,7 +72,8 @@ class TweetLikeController extends Controller
      */
     public function destroy(Tweet $tweet)
     {
-      $tweet->liked()->detach(auth()->id());
-      return back();
+        // 🔽 編集
+        $this->tweetLikeService->dislikeTweet($tweet, auth()->user());
+        return back();
     }
 }
